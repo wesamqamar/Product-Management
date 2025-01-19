@@ -16,14 +16,14 @@ class Product extends Model
     {
         foreach ($filters as $key => $value) {
             if (!empty($value)) {
-                $this->applyFilter($builder, $key, $value);
+                if ($key === 'name') {
+                    $builder->where('name', 'like', "%{$value}%");
+                }
+                if ($key === 'description') {
+                    $builder->where('description', 'like', "%{$value}%");
+                }
             }
         }
     }
 
-    protected function applyFilter(Builder $builder, string $key, string $value)
-    {
-        $builder->when($key === 'name', fn ($query) => $query->where('name', 'like', "%{$value}%"))
-                ->when($key === 'description', fn ($query) => $query->where('description', 'like', "%{$value}%"));
-    }
 }

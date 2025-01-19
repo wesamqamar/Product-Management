@@ -17,13 +17,13 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::filter($request->only(['search']))->paginate();
+        $products = Product::filter($request->only(['name', 'description']))
+                           ->paginate();
 
         return $products->isEmpty()
             ? response()->json(['message' => 'No products found'], 404)
             : response()->json($products);
     }
-
     public function show(int $id)
     {
         $product = Product::find($id);
@@ -34,20 +34,24 @@ class ProductController extends Controller
 
         return response()->json($product);
     }
-    public function update(ProductRequest $request, int $id)
+    public function update(Request $request, int $id)
     {
+        $validate = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'sometimes|numeric',
+        ]);
         $product = Product::find($id);
-
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-
-        $product->update($request->validated());
+        $product->update($validate);
         return response()->json([
             'message' => 'Product updated successfully',
             'product' => $product
         ], 200);
     }
+
 
     public function destroy(int $id)
     {
