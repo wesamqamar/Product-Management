@@ -24,7 +24,7 @@ Follow these steps to get your project up and running locally:
 
 1. **Clone the repository**:
     ```bash
-    git clone https://your-repository-url.git
+    git clone https://github.com/wesamqamar/Product-Management.git
     ```
 
 2. **Navigate to the project directory**:
