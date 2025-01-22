@@ -16,12 +16,15 @@ class Product extends Model
     {
         foreach ($filters as $key => $value) {
             if (!empty($value)) {
-                if ($key === 'name') {
-                    $builder->where('name', 'like', "%{$value}%");
-                }
-                if ($key === 'description') {
-                    $builder->where('description', 'like', "%{$value}%");
-                }
+                $builder->when(
+                    $key === 'name',
+                    fn($query) => $query->where('name', 'like', "%{$value}%")
+                );
+
+                $builder->when(
+                    $key === 'description',
+                    fn($query) => $query->where('description', 'like', "%{$value}%")
+                );
             }
         }
     }

@@ -68,6 +68,12 @@ Follow these steps to get your project up and running locally:
 
 ## Usage
 
+
+## Screenshots
+
+<div>
+    <img src="github-contents/sh.png" width="20%"></img> 
+</div>
 ### ProductController (API)
 
 The `ProductController` provides the following API endpoints for managing products:

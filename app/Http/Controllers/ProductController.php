@@ -1,67 +1,68 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
-use App\Models\Product;
+use App\Http\Resources\ProductResource;
+use App\Repositories\ProductRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class ProductController extends Controller
 {
-    public function store(ProductRequest $request)
+    protected $productRepository;
+
+    public function __construct(ProductRepositoryInterface $productRepository)
     {
-        $product = Product::create($request->validated());
-        return response()->json($product, 201);
+        $this->productRepository = $productRepository;
     }
 
     public function index(Request $request)
     {
-        $products = Product::filter($request->only(['name', 'description']))
-                           ->paginate();
-
+        $products = $this->productRepository->getAllProducts($request->only(['name', 'description']));
         return $products->isEmpty()
             ? response()->json(['message' => 'No products found'], 404)
-            : response()->json($products);
+            : ProductResource::collection($products);
     }
+
     public function show(int $id)
     {
-        $product = Product::find($id);
+        $product = $this->productRepository->getProductById($id);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        return response()->json($product);
+        return new ProductResource($product);
     }
+
+    public function store(ProductRequest $request)
+    {
+        $product = $this->productRepository->createProduct($request->validated());
+        return response()->json($product, 201);
+    }
+
     public function update(Request $request, int $id)
     {
-        $validate = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'sometimes|numeric',
-        ]);
-        $product = Product::find($id);
+        $product = $this->productRepository->updateProduct($id, $request->only(['name', 'description', 'price']));
+
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-        $product->update($validate);
+
         return response()->json([
             'message' => 'Product updated successfully',
             'product' => $product
         ], 200);
     }
 
-
     public function destroy(int $id)
     {
-        $product = Product::find($id);
+        $deleted = $this->productRepository->deleteProduct($id);
 
-        if (!$product) {
+        if (!$deleted) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        $product->delete();
         return response()->json(['message' => 'Product deleted successfully'], 200);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -39,7 +38,7 @@ class ProductManager extends Component
 
     public function addProduct()
     {
-        $this->validate();
+        $this->validate($this->rules);
         Product::create($this->getProductData());
         $this->flashMessage('Product added successfully!');
         $this->resetInputs();
@@ -54,7 +53,7 @@ class ProductManager extends Component
 
     public function updateProduct()
     {
-        $this->validate();
+        $this->validate($this->rules);
         $product = Product::findOrFail($this->productId);
         $product->update($this->getProductData());
         $this->flashMessage('Product updated successfully!');
@@ -91,6 +90,10 @@ class ProductManager extends Component
 
     public function resetInputs()
     {
-        $this->reset(['name', 'description', 'price', 'editMode', 'productId']);
+        $this->name = '';
+        $this->description = '';
+        $this->price = '';
+        $this->editMode = false;
+        $this->productId = null;
     }
 }
