@@ -41,7 +41,7 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
 
-    public function update(Request $request, int $id)
+    public function update(ProductRequest $request, int $id)
     {
         $product = $this->productRepository->updateProduct($id, $request->only(['name', 'description', 'price']));
 
